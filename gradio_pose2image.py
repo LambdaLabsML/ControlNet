@@ -61,5 +61,8 @@ def create_demo(process):
             input_image, prompt, a_prompt, n_prompt, num_samples,
             image_resolution, detect_resolution, ddim_steps, scale, seed, eta
         ]
-        run_button.click(fn=process, inputs=ips, outputs=[result_gallery])
+        run_button.click(fn=process,
+                         inputs=ips,
+                         outputs=[result_gallery],
+                         api_name='pose')
     return demo

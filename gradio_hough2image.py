@@ -74,5 +74,8 @@ def create_demo(process):
             image_resolution, detect_resolution, ddim_steps, scale, seed, eta,
             value_threshold, distance_threshold
         ]
-        run_button.click(fn=process, inputs=ips, outputs=[result_gallery])
+        run_button.click(fn=process,
+                         inputs=ips,
+                         outputs=[result_gallery],
+                         api_name='hough')
     return demo
