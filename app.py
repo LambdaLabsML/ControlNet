@@ -40,6 +40,12 @@ DESCRIPTION = '''# ControlNet
 
 This is an unofficial demo for [https://github.com/lllyasviel/ControlNet](https://github.com/lllyasviel/ControlNet).
 '''
+if (SPACE_ID := os.getenv('SPACE_ID')) is not None:
+    DESCRIPTION += f'''<p>For faster inference without waiting in queue, you may duplicate the space and upgrade to GPU in settings.<br/>
+<a href="https://huggingface.co/spaces/{SPACE_ID}?duplicate=true">
+<img style="margin-top: 0em; margin-bottom: 0em" src="https://bit.ly/3gLdBN6" alt="Duplicate Space"></a>
+<p/>
+'''
 
 model = Model()
 
