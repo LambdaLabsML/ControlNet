@@ -74,4 +74,4 @@ with gr.Blocks(css='style.css') as demo:
         with gr.TabItem('Normal map'):
             create_demo_normal(model.process_normal)
 
-demo.queue().launch()
+demo.queue(api_open=False).launch()
