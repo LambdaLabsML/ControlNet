@@ -8,7 +8,7 @@ def create_canvas(w, h):
     return np.zeros(shape=(h, w, 3), dtype=np.uint8) + 255
 
 
-def create_demo(process):
+def create_demo(process, max_images=12):
     with gr.Blocks() as demo:
         with gr.Row():
             gr.Markdown(
@@ -43,7 +43,7 @@ def create_demo(process):
                 with gr.Accordion('Advanced options', open=False):
                     num_samples = gr.Slider(label='Images',
                                             minimum=1,
-                                            maximum=12,
+                                            maximum=max_images,
                                             value=1,
                                             step=1)
                     image_resolution = gr.Slider(label='Image Resolution',

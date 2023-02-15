@@ -36,6 +36,7 @@ from gradio_scribble2image_interactive import \
 from gradio_seg2image import create_demo as create_demo_seg
 from model import Model
 
+MAX_IMAGES = 1
 DESCRIPTION = '''# ControlNet
 
 This is an unofficial demo for [https://github.com/lllyasviel/ControlNet](https://github.com/lllyasviel/ControlNet).
@@ -53,25 +54,25 @@ with gr.Blocks(css='style.css') as demo:
     gr.Markdown(DESCRIPTION)
     with gr.Tabs():
         with gr.TabItem('Canny'):
-            create_demo_canny(model.process_canny)
+            create_demo_canny(model.process_canny, max_images=MAX_IMAGES)
         with gr.TabItem('Hough'):
-            create_demo_hough(model.process_hough)
+            create_demo_hough(model.process_hough, max_images=MAX_IMAGES)
         with gr.TabItem('HED'):
-            create_demo_hed(model.process_hed)
+            create_demo_hed(model.process_hed, max_images=MAX_IMAGES)
         with gr.TabItem('Scribble'):
-            create_demo_scribble(model.process_scribble)
+            create_demo_scribble(model.process_scribble, max_images=MAX_IMAGES)
         with gr.TabItem('Scribble Interactive'):
             create_demo_scribble_interactive(
-                model.process_scribble_interactive)
+                model.process_scribble_interactive,  max_images=MAX_IMAGES)
         with gr.TabItem('Fake Scribble'):
-            create_demo_fake_scribble(model.process_fake_scribble)
+            create_demo_fake_scribble(model.process_fake_scribble, max_images=MAX_IMAGES)
         with gr.TabItem('Pose'):
-            create_demo_pose(model.process_pose)
+            create_demo_pose(model.process_pose, max_images=MAX_IMAGES)
         with gr.TabItem('Segmentation'):
-            create_demo_seg(model.process_seg)
+            create_demo_seg(model.process_seg, max_images=MAX_IMAGES)
         with gr.TabItem('Depth'):
-            create_demo_depth(model.process_depth)
+            create_demo_depth(model.process_depth, max_images=MAX_IMAGES)
         with gr.TabItem('Normal map'):
-            create_demo_normal(model.process_normal)
+            create_demo_normal(model.process_normal, max_images=MAX_IMAGES)
 
 demo.queue(api_open=False).launch()
