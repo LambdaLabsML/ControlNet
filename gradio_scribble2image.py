@@ -1,5 +1,5 @@
 # This file is adapted from https://github.com/lllyasviel/ControlNet/blob/f4748e3630d8141d7765e2bd9b1e348f47847707/gradio_scribble2image.py
-# The original license file is LICENSE.ControlNet this repo.
+# The original license file is LICENSE.ControlNet in this repo.
 import gradio as gr
 
 

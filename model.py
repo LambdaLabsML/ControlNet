@@ -1,5 +1,5 @@
 # This file is adapted from gradio_*.py in https://github.com/lllyasviel/ControlNet/tree/f4748e3630d8141d7765e2bd9b1e348f47847707
-# The original license file is LICENSE.ControlNet this repo.
+# The original license file is LICENSE.ControlNet in this repo.
 from __future__ import annotations
 
 import pathlib
