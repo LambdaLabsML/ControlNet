@@ -40,24 +40,11 @@ ORIGINAL_MODEL_NAMES = {
 }
 ORIGINAL_WEIGHT_ROOT = 'https://huggingface.co/lllyasviel/ControlNet/resolve/main/models/'
 
-LIGHTWEIGHT_MODEL_NAMES = {
-    'canny': 'control_canny-fp16.safetensors',
-    'hough': 'control_mlsd-fp16.safetensors',
-    'hed': 'control_hed-fp16.safetensors',
-    'scribble': 'control_scribble-fp16.safetensors',
-    'pose': 'control_openpose-fp16.safetensors',
-    'seg': 'control_seg-fp16.safetensors',
-    'depth': 'control_depth-fp16.safetensors',
-    'normal': 'control_normal-fp16.safetensors',
-}
-LIGHTWEIGHT_WEIGHT_ROOT = 'https://huggingface.co/webui/ControlNet-modules-safetensors/resolve/main/'
-
 
 class Model:
     def __init__(self,
                  model_config_path: str = 'ControlNet/models/cldm_v15.yaml',
-                 model_dir: str = 'models',
-                 use_lightweight: bool = True):
+                 model_dir: str = 'models'):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
         self.model = create_model(model_config_path).to(self.device)
@@ -67,40 +54,16 @@ class Model:
         self.model_dir = pathlib.Path(model_dir)
         self.model_dir.mkdir(exist_ok=True, parents=True)
 
-        self.use_lightweight = use_lightweight
-        if use_lightweight:
-            self.model_names = LIGHTWEIGHT_MODEL_NAMES
-            self.weight_root = LIGHTWEIGHT_WEIGHT_ROOT
-            base_model_url = 'https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors'
-            self.load_base_model(base_model_url)
-        else:
-            self.model_names = ORIGINAL_MODEL_NAMES
-            self.weight_root = ORIGINAL_WEIGHT_ROOT
+        self.model_names = ORIGINAL_MODEL_NAMES
+        self.weight_root = ORIGINAL_WEIGHT_ROOT
         self.download_models()
-
-    def download_base_model(self, model_url: str) -> pathlib.Path:
-        model_name = model_url.split('/')[-1]
-        out_path = self.model_dir / model_name
-        if not out_path.exists():
-            subprocess.run(shlex.split(f'wget {model_url} -O {out_path}'))
-        return out_path
-
-    def load_base_model(self, model_url: str) -> None:
-        model_path = self.download_base_model(model_url)
-        self.model.load_state_dict(load_state_dict(model_path,
-                                                   location=self.device.type),
-                                   strict=False)
 
     def load_weight(self, task_name: str) -> None:
         if task_name == self.task_name:
             return
         weight_path = self.get_weight_path(task_name)
-        if not self.use_lightweight:
-            self.model.load_state_dict(
-                load_state_dict(weight_path, location=self.device))
-        else:
-            self.model.control_model.load_state_dict(
-                load_state_dict(weight_path, location=self.device.type))
+        self.model.load_state_dict(
+            load_state_dict(weight_path, location=self.device))
         self.task_name = task_name
 
     def get_weight_path(self, task_name: str) -> str:
