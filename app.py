@@ -47,6 +47,8 @@ MAX_IMAGES = 1
 DESCRIPTION = '''# ControlNet
 
 This is an unofficial demo for [https://github.com/lllyasviel/ControlNet](https://github.com/lllyasviel/ControlNet).
+
+If you are interested in trying out other base models, check out [this Space](https://huggingface.co/spaces/hysts/ControlNet-with-other-models) as well.
 '''
 if (SPACE_ID := os.getenv('SPACE_ID')) is not None:
     DESCRIPTION += f'''<p>For faster inference without waiting in queue, you may duplicate the space and upgrade to GPU in settings.<br/>
