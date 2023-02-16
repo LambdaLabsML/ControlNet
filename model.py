@@ -71,22 +71,21 @@ class Model:
             self.model_names = LIGHTWEIGHT_MODEL_NAMES
             self.weight_root = LIGHTWEIGHT_WEIGHT_ROOT
             base_model_url = 'https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors'
-            self.download_base_model(base_model_url)
-            base_model_path = self.model_dir / base_model_url.split('/')[-1]
-            self.load_base_model(base_model_path)
+            self.load_base_model(base_model_url)
         else:
             self.model_names = ORIGINAL_MODEL_NAMES
             self.weight_root = ORIGINAL_WEIGHT_ROOT
         self.download_models()
 
-    def download_base_model(self, base_model_url: str) -> None:
-        model_name = base_model_url.split('/')[-1]
+    def download_base_model(self, model_url: str) -> pathlib.Path:
+        model_name = model_url.split('/')[-1]
         out_path = self.model_dir / model_name
-        if out_path.exists():
-            return
-        subprocess.run(shlex.split(f'wget {base_model_url} -O {out_path}'))
+        if not out_path.exists():
+            subprocess.run(shlex.split(f'wget {model_url} -O {out_path}'))
+        return out_path
 
-    def load_base_model(self, model_path: pathlib.Path) -> None:
+    def load_base_model(self, model_url: str) -> None:
+        model_path = self.download_base_model(model_url)
         self.model.load_state_dict(load_state_dict(model_path,
                                                    location=self.device.type),
                                    strict=False)
