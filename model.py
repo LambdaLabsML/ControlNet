@@ -38,7 +38,7 @@ ORIGINAL_MODEL_NAMES = {
     'depth': 'control_sd15_depth.pth',
     'normal': 'control_sd15_normal.pth',
 }
-ORIGINAL_WEIGHT_ROOT = 'https://huggingface.co/ckpt/ControlNet/resolve/main/'
+ORIGINAL_WEIGHT_ROOT = 'https://huggingface.co/lllyasviel/ControlNet/resolve/main/models/'
 
 LIGHTWEIGHT_MODEL_NAMES = {
     'canny': 'control_canny-fp16.safetensors',
