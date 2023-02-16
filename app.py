@@ -63,9 +63,10 @@ with gr.Blocks(css='style.css') as demo:
             create_demo_scribble(model.process_scribble, max_images=MAX_IMAGES)
         with gr.TabItem('Scribble Interactive'):
             create_demo_scribble_interactive(
-                model.process_scribble_interactive,  max_images=MAX_IMAGES)
+                model.process_scribble_interactive, max_images=MAX_IMAGES)
         with gr.TabItem('Fake Scribble'):
-            create_demo_fake_scribble(model.process_fake_scribble, max_images=MAX_IMAGES)
+            create_demo_fake_scribble(model.process_fake_scribble,
+                                      max_images=MAX_IMAGES)
         with gr.TabItem('Pose'):
             create_demo_pose(model.process_pose, max_images=MAX_IMAGES)
         with gr.TabItem('Segmentation'):

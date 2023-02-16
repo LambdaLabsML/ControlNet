@@ -28,22 +28,36 @@ from cldm.model import create_model, load_state_dict
 from ldm.models.diffusion.ddim import DDIMSampler
 from share import *
 
+ORIGINAL_MODEL_NAMES = {
+    'canny': 'control_sd15_canny.pth',
+    'hough': 'control_sd15_mlsd.pth',
+    'hed': 'control_sd15_hed.pth',
+    'scribble': 'control_sd15_scribble.pth',
+    'pose': 'control_sd15_openpose.pth',
+    'seg': 'control_sd15_seg.pth',
+    'depth': 'control_sd15_depth.pth',
+    'normal': 'control_sd15_normal.pth',
+}
+ORIGINAL_WEIGHT_ROOT = 'https://huggingface.co/ckpt/ControlNet/resolve/main/'
+
+LIGHTWEIGHT_MODEL_NAMES = {
+    'canny': 'control_canny-fp16.safetensors',
+    'hough': 'control_mlsd-fp16.safetensors',
+    'hed': 'control_hed-fp16.safetensors',
+    'scribble': 'control_scribble-fp16.safetensors',
+    'pose': 'control_openpose-fp16.safetensors',
+    'seg': 'control_seg-fp16.safetensors',
+    'depth': 'control_depth-fp16.safetensors',
+    'normal': 'control_normal-fp16.safetensors',
+}
+LIGHTWEIGHT_WEIGHT_ROOT = 'https://huggingface.co/webui/ControlNet-modules-safetensors/resolve/main/'
+
 
 class Model:
-    WEIGHT_NAMES = {
-        'canny': 'control_sd15_canny.pth',
-        'hough': 'control_sd15_mlsd.pth',
-        'hed': 'control_sd15_hed.pth',
-        'scribble': 'control_sd15_scribble.pth',
-        'pose': 'control_sd15_openpose.pth',
-        'seg': 'control_sd15_seg.pth',
-        'depth': 'control_sd15_depth.pth',
-        'normal': 'control_sd15_normal.pth',
-    }
-
     def __init__(self,
                  model_config_path: str = 'ControlNet/models/cldm_v15.yaml',
-                 model_dir: str = 'models'):
+                 model_dir: str = 'models',
+                 use_lightweight: bool = True):
         self.device = torch.device(
             'cuda:0' if torch.cuda.is_available() else 'cpu')
         self.model = create_model(model_config_path).to(self.device)
@@ -51,31 +65,57 @@ class Model:
         self.task_name = ''
 
         self.model_dir = pathlib.Path(model_dir)
+
+        self.use_lightweight = use_lightweight
+        if use_lightweight:
+            self.model_names = LIGHTWEIGHT_MODEL_NAMES
+            self.weight_root = LIGHTWEIGHT_WEIGHT_ROOT
+            base_model_url = 'https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.safetensors'
+            self.download_base_model(base_model_url)
+            base_model_path = self.model_dir / base_model_url.split('/')[-1]
+            self.load_base_model(base_model_path)
+        else:
+            self.model_names = ORIGINAL_MODEL_NAMES
+            self.weight_root = ORIGINAL_WEIGHT_ROOT
         self.download_models()
+
+    def download_base_model(self, base_model_url: str) -> None:
+        model_name = base_model_url.split('/')[-1]
+        out_path = self.model_dir / model_name
+        if out_path.exists():
+            return
+        subprocess.run(shlex.split(f'wget {base_model_url} -O {out_path}'))
+
+    def load_base_model(self, model_path: pathlib.Path) -> None:
+        self.model.load_state_dict(load_state_dict(model_path,
+                                                   location=self.device.type),
+                                   strict=False)
 
     def load_weight(self, task_name: str) -> None:
         if task_name == self.task_name:
             return
         weight_path = self.get_weight_path(task_name)
-        self.model.load_state_dict(
-            load_state_dict(weight_path, location=self.device))
+        if not self.use_lightweight:
+            self.model.load_state_dict(
+                load_state_dict(weight_path, location=self.device))
+        else:
+            self.model.control_model.load_state_dict(
+                load_state_dict(weight_path, location=self.device.type))
         self.task_name = task_name
 
     def get_weight_path(self, task_name: str) -> str:
         if 'scribble' in task_name:
             task_name = 'scribble'
-        return f'{self.model_dir}/{self.WEIGHT_NAMES[task_name]}'
+        return f'{self.model_dir}/{self.model_names[task_name]}'
 
-    def download_models(self):
+    def download_models(self) -> None:
         self.model_dir.mkdir(exist_ok=True, parents=True)
-        for name in self.WEIGHT_NAMES.values():
+        for name in self.model_names.values():
             out_path = self.model_dir / name
             if out_path.exists():
                 continue
             subprocess.run(
-                shlex.split(
-                    f'wget https://huggingface.co/ckpt/ControlNet/resolve/main/{name} -O {out_path}'
-                ))
+                shlex.split(f'wget {self.weight_root}{name} -O {out_path}'))
 
     @torch.inference_mode()
     def process_canny(self, input_image, prompt, a_prompt, n_prompt,
