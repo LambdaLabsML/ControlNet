@@ -65,6 +65,7 @@ class Model:
         self.task_name = ''
 
         self.model_dir = pathlib.Path(model_dir)
+        self.model_dir.mkdir(exist_ok=True, parents=True)
 
         self.use_lightweight = use_lightweight
         if use_lightweight:
