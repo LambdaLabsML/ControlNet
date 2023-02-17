@@ -48,7 +48,8 @@ def create_demo(process, max_images=12):
                                      minimum=-1,
                                      maximum=2147483647,
                                      step=1,
-                                     randomize=True)
+                                     randomize=True,
+                                     queue=False)
                     eta = gr.Number(label='eta (DDIM)', value=0.0)
                     a_prompt = gr.Textbox(
                         label='Added Prompt',
