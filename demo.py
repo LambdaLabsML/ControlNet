@@ -6,6 +6,7 @@ import os
 import pathlib
 import shlex
 import subprocess
+from pathlib import Path
 
 import gradio as gr
 
@@ -23,12 +24,15 @@ names = [
     "network-bsds500.pth",
     "upernet_global_small.pth",
 ]
+
+Path("annotator/ckpts").mkdir(parents=True, exist_ok=True)
+
 for name in names:
     command = f"wget https://huggingface.co/lllyasviel/ControlNet/resolve/main/annotator/ckpts/{name} -O {name}"
-    out_path = pathlib.Path(f"ControlNet/annotator/ckpts/{name}")
+    out_path = pathlib.Path(f"annotator/ckpts/{name}")
     if out_path.exists():
         continue
-    subprocess.run(shlex.split(command), cwd="ControlNet/annotator/ckpts/")
+    subprocess.run(shlex.split(command), cwd="annotator/ckpts/")
 
 from gradio_canny2image import create_demo as create_demo_canny
 from gradio_depth2image import create_demo as create_demo_depth

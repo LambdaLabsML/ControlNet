@@ -55,7 +55,7 @@ LIGHTWEIGHT_WEIGHT_ROOT = 'https://huggingface.co/webui/ControlNet-modules-safet
 
 class Model:
     def __init__(self,
-                 model_config_path: str = 'ControlNet/models/cldm_v15.yaml',
+                 model_config_path: str = 'models/cldm_v15.yaml',
                  model_dir: str = 'models',
                  use_lightweight: bool = True):
         self.device = torch.device(
